@@ -1,5 +1,7 @@
 import type { AdminProject } from "@/lib/admin-data";
 import LocationFields from "./LocationFields";
+import HelpTooltip from "./HelpTooltip";
+import ImageUploadField from "./ImageUploadField";
 
 const statusOptions = [
   { value: "pending", label: "En attente" },
@@ -10,15 +12,18 @@ const statusOptions = [
 
 function Field({
   label,
+  help,
   children,
 }: {
   label: string;
+  help?: string;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <label className="block text-[13px] font-medium text-gray-600 mb-1.5">
+      <label className="flex items-center text-[13px] font-medium text-gray-600 mb-1.5">
         {label}
+        {help && <HelpTooltip text={help} />}
       </label>
       {children}
     </div>
@@ -94,7 +99,10 @@ export default function ProjectForm({
           />
         </Field>
 
-        <Field label="Financement actuel (FCFA)">
+        <Field
+          label="Financement actuel (FCFA)"
+          help="Calculé automatiquement à partir des dons validés (voir la page Dons) — ne se modifie plus ici directement."
+        >
           <input
             type="text"
             readOnly
@@ -106,41 +114,20 @@ export default function ProjectForm({
             }
             className={`${inputClass} bg-gray-50 text-gray-500 cursor-not-allowed`}
           />
-          <p className="text-[12px] text-gray-400 mt-1">
-            Calculé automatiquement à partir des dons validés (voir{" "}
-            <a href="/admin/donations" className="text-green underline">
-              Dons
-            </a>
-            ) — ne se modifie plus ici directement.
-          </p>
         </Field>
 
         <LocationFields project={project} />
 
-        <Field label="Image mise en avant (URL)">
-          <input
-            name="featured_image_url"
-            defaultValue={project?.featured_image_url ?? ""}
-            className={inputClass}
-            placeholder="https://..."
-          />
+        <Field label="Image mise en avant">
+          <ImageUploadField name="featured_image_url" defaultValue={project?.featured_image_url} />
         </Field>
 
         <div className="sm:col-span-2">
-          <Field label="Photo panoramique 360° (URL, optionnel)">
-            <input
-              name="panorama_image_url"
-              defaultValue={project?.panorama_image_url ?? ""}
-              className={inputClass}
-              placeholder="https://..."
-            />
-            <p className="text-[12px] text-gray-400 mt-1">
-              Doit être une image équirectangulaire (ratio 2:1) — la plupart
-              des apps &quot;mode panorama&quot; de smartphone ou des
-              caméras 360° exportent directement dans ce format. Si rempli,
-              une visite virtuelle interactive apparaît sur la fiche
-              publique du projet.
-            </p>
+          <Field
+            label="Photo panoramique 360° (optionnel)"
+            help='Doit être une image équirectangulaire (ratio 2:1) — la plupart des apps "mode panorama" de smartphone ou des caméras 360° exportent directement dans ce format. Si rempli, une visite virtuelle interactive apparaît sur la fiche publique du projet.'
+          >
+            <ImageUploadField name="panorama_image_url" defaultValue={project?.panorama_image_url} />
           </Field>
         </div>
 

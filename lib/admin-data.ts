@@ -18,6 +18,7 @@ export interface AdminProject {
   start_date: string | null;
   end_date: string | null;
   created_at: string;
+  
 }
 
 export interface AdminExpense {
@@ -202,11 +203,13 @@ export interface AdminDonation {
   donation_type: "monetary" | "in_kind";
   item_description: string | null;
   payment_method: string | null;
+  proof_url: string | null;
   status: "pending" | "awaiting_confirmation" | "validated" | "rejected";
   project_id: string | null;
   project_title?: string;
   tracking_code: string;
   created_at: string;
+  
 }
 
 export async function getDonations(): Promise<AdminDonation[]> {
@@ -263,4 +266,32 @@ export async function getAllPaymentMethods(): Promise<AdminPaymentMethod[]> {
     return [];
   }
   return data;
+}
+export interface AdminExpenseWithProject {
+  id: string;
+  project_id: string;
+  project_title?: string;
+  amount: number;
+  description: string;
+  document_url: string | null;
+  expense_date: string;
+  created_at: string;
+}
+
+export async function getAllExpenses(): Promise<AdminExpenseWithProject[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("*, projects(title)")
+    .order("expense_date", { ascending: false });
+
+  if (error || !data) {
+    console.error("[admin-data] getAllExpenses", error);
+    return [];
+  }
+
+  return data.map((row: any) => ({
+    ...row,
+    project_title: row.projects?.title,
+  }));
 }

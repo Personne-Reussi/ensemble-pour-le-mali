@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import MobileTabBar from "@/components/MobileTabBar";
 import Footer from "@/components/Footer";
 import ProjectCard from "@/components/ProjectCard";
 import { getFeaturedProjects } from "@/lib/data";
@@ -30,6 +31,7 @@ export default async function ProjectsCatalogPage() {
           </div>
         )}
       </section>
+      <MobileTabBar />
 
       <Footer />
     </main>

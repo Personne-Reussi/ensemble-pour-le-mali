@@ -254,3 +254,57 @@ export async function deletePaymentMethodAction(id: string) {
   revalidatePath("/admin/payment-methods");
   redirect("/admin/payment-methods");
 }
+// ------------------------------------------------------------
+// Dépenses (vue globale, tous projets)
+// ------------------------------------------------------------
+
+export async function createExpenseGlobalAction(formData: FormData) {
+  const supabase = await createClient();
+  const projectId = String(formData.get("project_id") ?? "").trim();
+
+  if (!projectId) {
+    throw new Error("Sélectionne un projet.");
+  }
+
+  const { error } = await supabase.from("expenses").insert({
+    project_id: projectId,
+    amount: Number(formData.get("amount") ?? 0),
+    description: String(formData.get("description") ?? "").trim(),
+    document_url: String(formData.get("document_url") ?? "").trim() || null,
+    expense_date: String(formData.get("expense_date") ?? ""),
+  });
+
+  if (error) {
+    throw new Error(`Impossible d'ajouter la dépense : ${error.message}`);
+  }
+
+  revalidatePath("/admin/expenses");
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath("/admin");
+  redirect("/admin/expenses");
+}
+
+export async function deleteExpenseGlobalAction(id: string) {
+  const supabase = await createClient();
+
+  // On récupère le projet concerné avant suppression, pour pouvoir
+  // revalider sa fiche également.
+  const { data: expense } = await supabase
+    .from("expenses")
+    .select("project_id")
+    .eq("id", id)
+    .single();
+
+  const { error } = await supabase.from("expenses").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(`Impossible de supprimer la dépense : ${error.message}`);
+  }
+
+  revalidatePath("/admin/expenses");
+  revalidatePath("/admin");
+  if (expense?.project_id) {
+    revalidatePath(`/admin/projects/${expense.project_id}`);
+  }
+  redirect("/admin/expenses");
+}

@@ -19,19 +19,20 @@ export default function StatsBar({
 
   return (
     <section className="bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
-        <div className="grid lg:grid-cols-[1.3fr_1.4fr_0.9fr_0.9fr_1fr] gap-8 items-center">
-          <div>
-            <h2 className="font-heading font-semibold text-[22px]">
-              Notre impact en chiffres
-            </h2>
-            <p className="text-gray-500 text-sm mt-1">
-              Grâce à votre soutien, nous agissons sur le terrain.
-            </p>
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 lg:py-10">
+        <div className="mb-6 lg:mb-0 lg:hidden">
+          <h2 className="font-heading font-semibold text-[20px]">Notre impact en chiffres</h2>
+          <p className="text-gray-500 text-sm mt-1">Grâce à votre soutien, nous agissons sur le terrain.</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1.4fr_0.9fr_0.9fr_1fr] gap-6 lg:gap-8 lg:items-center">
+          <div className="hidden lg:block">
+            <h2 className="font-heading font-semibold text-[22px]">Notre impact en chiffres</h2>
+            <p className="text-gray-500 text-sm mt-1">Grâce à votre soutien, nous agissons sur le terrain.</p>
           </div>
 
-          {/* Fonds collectés */}
-          <div className="border-l border-gray-200 pl-8">
+          {/* Fonds collectés — pleine largeur sur mobile, seule stat mise en avant */}
+          <div className="lg:border-l lg:border-gray-200 lg:pl-8">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-full bg-green/10 flex items-center justify-center shrink-0">
                 <svg width="20" height="20" fill="none" stroke="#27AE60" strokeWidth={2} viewBox="0 0 24 24">
@@ -41,7 +42,7 @@ export default function StatsBar({
                 </svg>
               </div>
               <div>
-                <p className="font-heading font-semibold text-[22px] leading-none">
+                <p className="font-heading font-semibold text-[20px] lg:text-[22px] leading-none">
                   {formatFcfa(appSettings.manual_total_collected)}{" "}
                   <span className="text-[13px] font-medium text-gray-500">FCFA</span>
                 </p>
@@ -57,63 +58,56 @@ export default function StatsBar({
             </p>
           </div>
 
-          {/* Projets en cours */}
-          <div className="border-l border-gray-200 pl-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-ocre/20 flex items-center justify-center shrink-0">
-              <svg width="18" height="18" fill="none" stroke="#B98900" strokeWidth={2} viewBox="0 0 24 24">
-                <rect x="5" y="3" width="14" height="18" rx="2" />
-                <path d="M9 8h6M9 12h6M9 16h4" />
-              </svg>
+          {/* Les 3 stats suivantes : grille 2 colonnes sur mobile (la 4e
+              en dessous, seule sur sa ligne), une ligne sur desktop. */}
+          <div className="grid grid-cols-2 lg:contents gap-6">
+            <div className="flex items-center gap-3 lg:border-l lg:border-gray-200 lg:pl-6">
+              <div className="w-10 h-10 rounded-full bg-ocre/20 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" fill="none" stroke="#B98900" strokeWidth={2} viewBox="0 0 24 24">
+                  <rect x="5" y="3" width="14" height="18" rx="2" />
+                  <path d="M9 8h6M9 12h6M9 16h4" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-heading font-semibold text-[20px] lg:text-[22px] leading-none">
+                  {impactStats.projectsInProgress}
+                </p>
+                <p className="text-gray-500 text-[12px] lg:text-[13px] mt-1">
+                  Projets<br className="lg:hidden" /> en cours
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-heading font-semibold text-[22px] leading-none">
-                {impactStats.projectsInProgress}
-              </p>
-              <p className="text-gray-500 text-[13px] mt-1">
-                Projets en cours
-                <br />
-                <span className="text-gray-400">
-                  (sur {impactStats.projectsTotal} au total)
-                </span>
-              </p>
+
+            <div className="flex items-center gap-3 lg:border-l lg:border-gray-200 lg:pl-6">
+              <div className="w-10 h-10 rounded-full bg-green/10 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" fill="none" stroke="#27AE60" strokeWidth={2} viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M8 12l3 3 5-6" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-heading font-semibold text-[20px] lg:text-[22px] leading-none">
+                  {impactStats.projectsCompleted}
+                </p>
+                <p className="text-gray-500 text-[12px] lg:text-[13px] mt-1">
+                  Projets<br className="lg:hidden" /> terminés
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Projets terminés */}
-          <div className="border-l border-gray-200 pl-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-green/10 flex items-center justify-center shrink-0">
-              <svg width="18" height="18" fill="none" stroke="#27AE60" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M8 12l3 3 5-6" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-heading font-semibold text-[22px] leading-none">
-                {impactStats.projectsCompleted}
-              </p>
-              <p className="text-gray-500 text-[13px] mt-1">
-                Projets terminés
-                <br />
-                <span className="text-gray-400">(depuis 2022)</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Bénévoles actifs */}
-          <div className="border-l border-gray-200 pl-6 flex items-center gap-3">
+          <div className="flex items-center gap-3 lg:border-l lg:border-gray-200 lg:pl-6">
             <div className="w-10 h-10 rounded-full bg-green/10 flex items-center justify-center shrink-0">
               <svg width="18" height="18" fill="none" stroke="#27AE60" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M17 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
               </svg>
             </div>
             <div>
-              <p className="font-heading font-semibold text-[22px] leading-none">
+              <p className="font-heading font-semibold text-[20px] lg:text-[22px] leading-none">
                 {impactStats.volunteersActive}
               </p>
-              <p className="text-gray-500 text-[13px] mt-1">
+              <p className="text-gray-500 text-[12px] lg:text-[13px] mt-1">
                 Bénévoles actifs
-                <br />
-                <span className="text-gray-400">(Mali &amp; international)</span>
               </p>
             </div>
           </div>

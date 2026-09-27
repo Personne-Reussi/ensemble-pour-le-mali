@@ -22,7 +22,7 @@ import { getPendingDonationsCount } from "@/lib/admin-data";
 const mainLinks = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, enabled: true },
   { href: "/admin/projects", label: "Projets", icon: FolderKanban, enabled: true },
-  { href: "#", label: "Dépenses", icon: Wallet, enabled: false },
+  { href: "/admin/expenses", label: "Dépenses", icon: Wallet, enabled: true },
   { href: "/admin/donations", label: "Dons", icon: HeartHandshake, enabled: true },
   { href: "/admin/payment-methods", label: "Moyens de paiement", icon: CreditCard, enabled: true },
   { href: "#", label: "Bénévoles", icon: Users, enabled: false },

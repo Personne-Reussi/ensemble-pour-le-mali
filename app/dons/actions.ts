@@ -58,11 +58,22 @@ export async function submitDonationPledge(
   return { error: "Impossible de générer un code de suivi. Réessaie dans un instant." };
 }
 
+// Reçoit un FormData plutôt que des arguments séparés : c'est le seul
+// format que Next.js sait transporter vers une Server Action quand il
+// contient un fichier (un objet File brut passé en argument direct
+// provoque "Only plain objects... can be passed to Server Actions").
 export async function confirmDonationPayment(
-  trackingCode: string
+  formData: FormData
 ): Promise<{ success: true } | { error: string }> {
   if (!isServiceRoleConfigured()) {
     return { error: "Le suivi des dons n'est pas encore configuré." };
+  }
+
+  const trackingCode = String(formData.get("trackingCode") ?? "").trim().toUpperCase();
+  const proofFile = formData.get("proof") as File | null;
+
+  if (!trackingCode) {
+    return { error: "Code de suivi manquant." };
   }
 
   const supabase = createServiceRoleClient();
@@ -70,7 +81,7 @@ export async function confirmDonationPayment(
   const { data, error: fetchError } = await supabase
     .from("donations")
     .select("id, status")
-    .eq("tracking_code", trackingCode.trim().toUpperCase())
+    .eq("tracking_code", trackingCode)
     .single();
 
   if (fetchError || !data) {
@@ -81,9 +92,31 @@ export async function confirmDonationPayment(
     return { error: "Ce don a déjà été traité." };
   }
 
+  // Justificatif optionnel : uploadé via la clé service_role (le
+  // donateur n'est pas authentifié), stocké dans un bucket dédié dont le
+  // chemin aléatoire fait office de secret — voir
+  // supabase/migrations/008_donation_proof.sql.
+  let proofUrl: string | null = null;
+
+  if (proofFile && proofFile.size > 0) {
+    const ext = proofFile.name.split(".").pop() || "jpg";
+    const path = `${data.id}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("donation-proofs")
+      .upload(path, proofFile);
+
+    if (uploadError) {
+      return { error: "Impossible d'envoyer le justificatif. Réessaie, ou continue sans." };
+    }
+
+    const { data: urlData } = supabase.storage.from("donation-proofs").getPublicUrl(path);
+    proofUrl = urlData.publicUrl;
+  }
+
   const { error } = await supabase
     .from("donations")
-    .update({ status: "awaiting_confirmation" })
+    .update({ status: "awaiting_confirmation", proof_url: proofUrl })
     .eq("id", data.id);
 
   if (error) {

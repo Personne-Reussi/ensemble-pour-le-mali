@@ -32,6 +32,7 @@ export default function DonationModal({
 
   const [trackingCode, setTrackingCode] = useState("");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [proofFile, setProofFile] = useState<File | null>(null);
 
   function resetAndClose() {
     setOpen(false);
@@ -43,6 +44,7 @@ export default function DonationModal({
       setAmount("");
       setItemDescription("");
       setTrackingCode("");
+      setProofFile(null);
     }, 300);
   }
 
@@ -75,7 +77,17 @@ export default function DonationModal({
   async function handleConfirmPayment() {
     setLoading(true);
     setError(null);
-    const result = await confirmDonationPayment(trackingCode);
+
+    // Un fichier ne peut voyager vers une Server Action que dans un
+    // FormData — le passer comme argument brut fait planter Next.js
+    // ("Only plain objects... can be passed to Server Actions").
+    const formData = new FormData();
+    formData.set("trackingCode", trackingCode);
+    if (proofFile) {
+      formData.set("proof", proofFile);
+    }
+
+    const result = await confirmDonationPayment(formData);
 
     if ("error" in result) {
       setLoading(false);
@@ -245,6 +257,25 @@ export default function DonationModal({
                         ))}
                       </div>
                     )}
+
+                    <div className="mb-5">
+                      <label className="block text-[13px] font-medium text-gray-600 mb-1.5">
+                        Justificatif de paiement (optionnel)
+                      </label>
+                      <label className="cursor-pointer bg-gray-50 border border-gray-200 hover:border-green text-gray-600 text-[13px] font-medium px-4 py-2.5 rounded-lg transition inline-block">
+                        {proofFile ? "✓ " + proofFile.name : "Joindre une capture (SMS de confirmation)"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
+                        />
+                      </label>
+                      <p className="text-[12px] text-gray-400 mt-1.5">
+                        Aide l&apos;association à confirmer ton don plus vite. Tu peux aussi
+                        valider sans, et envoyer le justificatif plus tard si besoin.
+                      </p>
+                    </div>
                   </>
                 )}
 
@@ -260,7 +291,7 @@ export default function DonationModal({
                   className="w-full bg-green text-white font-semibold text-[14px] py-2.5 rounded-full hover:bg-green-dark transition disabled:opacity-60"
                 >
                   {loading
-                    ? "..."
+                    ? "Envoi..."
                     : donationType === "monetary"
                     ? "J'ai payé, valider mon don"
                     : "Confirmer mon don"}

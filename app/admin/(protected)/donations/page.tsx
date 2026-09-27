@@ -43,6 +43,7 @@ export default async function DonationsPage() {
                 <th className="font-medium px-5 py-3">Projet</th>
                 <th className="font-medium px-5 py-3">Type</th>
                 <th className="font-medium px-5 py-3">Montant</th>
+                <th className="font-medium px-5 py-3">Justificatif</th>
                 <th className="font-medium px-5 py-3">Statut</th>
                 <th className="font-medium px-5 py-3">Code</th>
                 <th className="font-medium px-5 py-3"></th>
@@ -60,6 +61,20 @@ export default async function DonationsPage() {
                     </td>
                     <td className="px-5 py-3.5 text-gray-500">
                       {d.donation_type === "monetary" ? formatFcfa(d.amount) : d.item_description}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      {d.proof_url ? (
+                        <a
+                          href={d.proof_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green font-semibold text-[13px] underline"
+                        >
+                          Voir
+                        </a>
+                      ) : (
+                        <span className="text-gray-300 text-[13px]">—</span>
+                      )}
                     </td>
                     <td className="px-5 py-3.5">
                       <span className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${status.className}`}>

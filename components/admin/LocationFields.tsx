@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MALI_REGIONS } from "@/lib/mali-regions";
 import type { AdminProject } from "@/lib/admin-data";
+import HelpTooltip from "./HelpTooltip";
 
 const inputClass =
   "w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[14px] focus:outline-none focus:ring-2 focus:ring-green/30 focus:border-green";
@@ -108,8 +109,9 @@ export default function LocationFields({ project }: { project?: AdminProject | n
   return (
     <div className="sm:col-span-2 space-y-5">
       <div ref={wrapperRef} className="relative">
-        <label className="block text-[13px] font-medium text-gray-600 mb-1.5">
-          Rechercher un lieu (optionnel — remplit les champs ci-dessous automatiquement)
+        <label className="flex items-center text-[13px] font-medium text-gray-600 mb-1.5">
+          Rechercher un lieu
+          <HelpTooltip text="Optionnel — remplit automatiquement Région/Ville/Adresse et la position GPS avec un lieu réel. Le plus fiable." />
         </label>
         <input
           type="text"
@@ -178,8 +180,9 @@ export default function LocationFields({ project }: { project?: AdminProject | n
       </div>
 
       <div>
-        <label className="block text-[13px] font-medium text-gray-600 mb-1.5">
+        <label className="flex items-center text-[13px] font-medium text-gray-600 mb-1.5">
           Adresse précise (optionnel)
+          <HelpTooltip text="Utilise la recherche ci-dessus pour un résultat fiable. Si tapée à la main et introuvable, la position retombe automatiquement sur la ville puis la région — jamais sur rien du tout." />
         </label>
         <input
           name="address"
@@ -191,51 +194,14 @@ export default function LocationFields({ project }: { project?: AdminProject | n
           className={inputClass}
           placeholder="Quartier Médine, près du marché central"
         />
-        <p className="text-[12px] text-gray-400 mt-1">
-          Utilise la recherche ci-dessus pour remplir automatiquement les
-          champs avec un lieu réel (le plus fiable). Si l&apos;adresse
-          tapée à la main ne correspond à rien de précis, la position
-          retombe automatiquement sur la ville puis la région — jamais
-          sur rien du tout.
-        </p>
       </div>
 
-      <details className="group" open={coords != null && search === ""}>
-        <summary className="text-[13px] font-medium text-gray-500 cursor-pointer hover:text-green select-none">
-          Coordonnées GPS {coords ? "(définies)" : "(calculées automatiquement)"}
-        </summary>
-        <div className="grid sm:grid-cols-2 gap-5 mt-4">
-          <div>
-            <label className="block text-[13px] font-medium text-gray-600 mb-1.5">Latitude</label>
-            <input
-              type="number"
-              step="any"
-              name="latitude"
-              value={coords?.lat ?? ""}
-              onChange={(e) => setCoords({ lat: e.target.value, lon: coords?.lon ?? "" })}
-              className={inputClass}
-              placeholder="Calculée automatiquement si vide"
-            />
-          </div>
-          <div>
-            <label className="block text-[13px] font-medium text-gray-600 mb-1.5">Longitude</label>
-            <input
-              type="number"
-              step="any"
-              name="longitude"
-              value={coords?.lon ?? ""}
-              onChange={(e) => setCoords({ lat: coords?.lat ?? "", lon: e.target.value })}
-              className={inputClass}
-              placeholder="Calculée automatiquement si vide"
-            />
-          </div>
-        </div>
-        <p className="text-[12px] text-gray-400 mt-2">
-          Remplies automatiquement quand tu choisis un résultat dans la
-          recherche ci-dessus. Laisser vide recalcule la position depuis
-          l&apos;adresse/ville/région à chaque enregistrement.
-        </p>
-      </details>
+      {/* Coordonnées GPS : plus besoin de les afficher, la recherche
+          ci-dessus (ou le géocodage automatique à l'enregistrement) s'en
+          charge. On les garde en champs cachés pour transmettre la
+          position exacte choisie via la recherche. */}
+      <input type="hidden" name="latitude" value={coords?.lat ?? ""} />
+      <input type="hidden" name="longitude" value={coords?.lon ?? ""} />
     </div>
   );
 }

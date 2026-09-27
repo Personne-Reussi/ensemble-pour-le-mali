@@ -19,6 +19,7 @@ export interface Project {
   end_date?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  
 }
 
 export interface NewsItem {
@@ -56,6 +57,7 @@ export interface Donation {
   project_id: string | null;
   tracking_code: string;
   created_at: string;
+  proof_url: string | null;
 }
 
 export interface PaymentMethod {

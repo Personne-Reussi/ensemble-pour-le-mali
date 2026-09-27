@@ -3,7 +3,9 @@ import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
 import ProjectsSection from "@/components/ProjectsSection";
 import CtaSection from "@/components/CtaSection";
+import MobileTabBar from "@/components/MobileTabBar";
 import Footer from "@/components/Footer";
+
 import {
   getFeaturedProjects,
   getAppSettings,
@@ -34,6 +36,7 @@ export default async function Home() {
       <StatsBar appSettings={appSettings} impactStats={impactStats} />
       <ProjectsSection projects={projects} mapMarkers={mapMarkers} news={news} />
       <CtaSection />
+      <MobileTabBar />
       <Footer />
     </main>
   );

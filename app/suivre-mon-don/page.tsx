@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
+import MobileTabBar from "@/components/MobileTabBar";
 import Footer from "@/components/Footer";
 import { lookupDonationByCode } from "@/app/dons/actions";
 import { donationStatusLabels } from "@/lib/donations";
@@ -119,6 +120,7 @@ function TrackDonationForm() {
           </div>
         )}
       </section>
+      <MobileTabBar />
 
       <Footer />
     </main>

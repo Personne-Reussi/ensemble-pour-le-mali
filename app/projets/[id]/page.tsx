@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
+import MobileTabBar from "@/components/MobileTabBar";
 import Footer from "@/components/Footer";
 import PanoramaViewer from "@/components/PanoramaViewer";
 import DonationModal from "@/components/DonationModal";
@@ -292,6 +293,7 @@ export default async function ProjectDetailPage({
           </div>
         </aside>
       </section>
+      <MobileTabBar />
 
       <Footer />
     </main>
