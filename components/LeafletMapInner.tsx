@@ -36,8 +36,6 @@ const MALI_CENTER: [number, number] = [17, -4];
 export default function LeafletMapInner({ markers }: { markers: MapMarker[] }) {
   const router = useRouter();
 
-  // Avec un seul point (ex. mini-carte d'une fiche projet), on centre et
-  // zoome directement dessus plutôt que d'afficher tout le pays.
   const center: [number, number] =
     markers.length === 1 ? [markers[0].latitude, markers[0].longitude] : MALI_CENTER;
   const zoom = markers.length === 1 ? 11 : 5;
@@ -47,7 +45,17 @@ export default function LeafletMapInner({ markers }: { markers: MapMarker[] }) {
       center={center}
       zoom={zoom}
       scrollWheelZoom
-      className="w-full h-full"
+      // `isolate` (CSS isolation: isolate) est la vraie correction du bug
+      // "la carte passe au-dessus de tout au scroll" : Leaflet donne à
+      // ses propres éléments (tuiles, contrôles zoom, popups) des
+      // z-index internes très élevés (jusqu'à 1000). Sans isolation, ces
+      // valeurs entrent en compétition avec le reste de la page (barre
+      // de navigation mobile, modales...) dans le MÊME contexte
+      // d'empilement global. `isolate` enferme tous les z-index internes
+      // de Leaflet à l'intérieur de cette boîte : ils ne peuvent plus
+      // jamais déborder par-dessus quoi que ce soit d'extérieur, quelle
+      // que soit la valeur que Leaflet utilise en interne.
+      className="w-full h-full isolate"
       style={{ background: "#eef1ea" }}
     >
       <TileLayer

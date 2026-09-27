@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  /* Garde-fou : empêche toute la page de défiler horizontalement si un
+     élément interne (canevas 360°, carte...) calcule par erreur une
+     largeur légèrement supérieure au viewport. Les éléments individuels
+     restent scrollables horizontalement s'ils le prévoient explicitement
+     (ex. overflow-x-auto sur un tableau) — seule la page entière ne peut
+     plus déborder. */
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   color: #333333;
   background-color: #f8f9fa;
